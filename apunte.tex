@@ -1,0 +1,294 @@
+\documentclass[a4paper]{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{stmaryrd}
+
+\newcommand{\existe}{\mbox{existe }}
+\newcommand{\RE}{\mathbb{R}}
+
+\begin{document}
+	\section{Traduccion finita}
+	\subsection{Enunciado}
+	\begin{enumerate}
+		\item 15 pts) De una traduccion T correcta de expresiones del algebra relacional a consultas del calculo de tuplas.
+		\item 20 pts) Demuestre que si $ M =\langle R_1,\ldots,R_k \rangle $ es un modelo en el cual todas las relaciones son finitas, $ \llbracket T(E)\rrbracket _M $ es una relaciones finita.
+	\end{enumerate}
+	\subsection{Traduccion de AR a CRT}
+	\begin{eqnarray*}
+		T(E) & = & \{ t|T'_t(E) \} \\
+		\\
+		\mbox{donde }T'_t(E)\mbox{ es}\\
+		\\
+		T'_t(R) & = & t \in R \\
+		T'_t(R \cup S) & = & T'_t(R) \vee T'_t(S) \\
+		T'_t(R \backslash S) & = & T'_t(R) \wedge \neg T'_t(S) \\
+		T'_t(R \times S) & = & 
+			(\exists t_1)(T'_{t_1}(R) \wedge t[1]=t_1[1] \wedge \ldots \wedge t[n]=t_1[n]) \wedge \\ && 
+			(\exists t_2)(T'_{t_2}(S) \wedge t[n+1]=t_2[1] \wedge \ldots \wedge t[n+m]=t_2[m]) \\
+		T'_t(\pi_{i_1, \ldots, i_n}(R)) & = & 
+			(\exists t_1)(T'_{t_1}(R) \wedge t[1]=t_1[i_1] \wedge \ldots \wedge t[n]=t_1[i_n]) \\
+		T'_t(\sigma _{i \theta c}(R)) & = & T'_t(R) \wedge t[i] \ \widetilde{\theta} \ \widetilde{c} \\
+		T'_t(\sigma _{i \theta j}(R)) & = & T'_t(R) \wedge t[i] \ \widetilde{\theta} \ t[j]
+	\end{eqnarray*}
+	\subsection{Semantica CRT}
+	Sea $M=\{\RE_1, \ldots, \RE_n\}$ un modelo y $v$ una funcion ($v:variables \rightarrow tuplas$), entonces:
+	\begin{eqnarray*}
+		\llbracket\{t|E\}\rrbracket _M & = & \{v(t)|M \models E[v] \} \\
+		\\
+		\mbox{donde }M \models E[v]\mbox{ es}\\
+		\\
+		M \models (t \in R_i)[v] & \Leftrightarrow & v(t) \in \RE_i \\
+		M \models (E_1 \wedge E_2)[v] & \Leftrightarrow & M \models E_1[v] \ y \ M \models E_2[v] \\
+		M \models (E_1 \vee E_2)[v] & \Leftrightarrow & M \models E_1[v] \ o \ M \models E_2[v] \\
+		M \models (\neg E_1)[v] & \Leftrightarrow & no \ M \models E_1[v] \\
+		M \models (\exists t) (E_1)[v] & \Leftrightarrow & (\existe a)(M \models E_1[v[a]] )\\
+		\\
+		(x)[v[a/t]]  & = & \left\{
+			\begin{array}{cc}
+						v(x) & \textrm{si } x \neq t \\
+						a & \textrm{si } x = t \\
+			\end{array}
+			\right.
+	\end{eqnarray*}
+	\subsection{Propiedades}
+	\begin{eqnarray*}
+	P(a) & \Leftrightarrow & a \in \{b|P(b)\}\\
+	E & \Leftrightarrow & a \in \{b|E[b/a]\}\\
+	\end{eqnarray*}
+	\subsection{Demostracion}
+	Ahora quiro ver que para toda expresion valida algebra relacional $ \llbracket T(E)\rrbracket _M $ es una relacion finita.\\
+	Voy a demostrarlo por induccion sobre la estructura de las expresiones del algebra relacional.
+%	
+	\begin{center}
+	\begin{tabular}{p{12cm}}
+	\hline
+	\textbf{Para $R$} \\
+	\hline
+	\end{tabular}
+	\end{center}
+%		
+		\begin{eqnarray*}
+			&& \llbracket T(R)\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|T'_t(R_i)\}\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|t \in R_i\}\rrbracket _M \\
+			\mbox{(por semantica)} & = & \{v(t)|M \models (t \in R_i)[v]\} \\
+			\mbox{(por semantica)} & = & \{v(t)|v(t) \in \RE_i\} \\
+			\mbox{(por renombre)} & = & \{a|a \in \RE_i\} \\
+			\mbox{(por conjuntos)} & = & \RE_i
+		\end{eqnarray*}
+		En $M$ todas las relaciones son finitas, por lo cual $\RE_i$ es finita.
+%
+	\begin{center}
+	\begin{tabular}{p{12cm}}
+	\hline
+	\textbf{Para $R \cup S$} \\
+	\hline
+	\end{tabular}
+	\end{center}
+%	
+		\begin{eqnarray*}
+			&& \llbracket T(R \cup S)\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|T'_t(R \cup S)\}\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|T'_t(R)\vee T'_t(S)\}\rrbracket _M \\
+			\mbox{(por semantica)} & = & \{v(t)|M \models (T'_t(R)\vee T'_t(S))[v]\} \\
+			\mbox{(por semantica)} & = & \{v(t)|M \models T'_t(R)[v] \ o \ M \models T'_t(S)[v]\} \\
+			\mbox{(por conjuntos)} & = & \{v(t)|M \models T'_t(R)[v]\} \cup \{v(t)|M \models T'_t(S)[v]\} \\
+			\mbox{(por semantica)} & = & \llbracket \{t|T'_t(R)\rrbracket _M \cup \llbracket \{t|T'_t(S)\}\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket T(R)\rrbracket _M \cup \llbracket T(S)\rrbracket _M
+		\end{eqnarray*}
+		Por hipotesis de induccion estructural $\llbracket T(R)\rrbracket _M$ y $\llbracket T(S)\rrbracket _M$ son ambas finitas, y por lo tanto su union lo es tambien.
+%
+	\begin{center}
+	\begin{tabular}{p{12cm}}
+	\hline
+	\textbf{Para $R \backslash S$} \\
+	\hline
+	\end{tabular}
+	\end{center}
+%	
+		\begin{eqnarray*}
+			&& \llbracket T(R \backslash S)\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|T'_t(R \backslash S)\}\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|T'_t(R)\wedge \neg T'_t(S)\}\rrbracket _M \\
+			\mbox{(por semantica)} & = & \{v(t)|M \models (T'_t(R)\wedge \neg T'_t(S))[v]\} \\
+			\mbox{(por semantica)} & = & \{v(t)|M \models T'_t(R)[v] \ y \ M \models \neg T'_t(S)[v]\} \\
+			\mbox{(por semantica)} & = & \{v(t)|M \models T'_t(R)[v] \ y \ no \ M \models T'_t(S)[v]\} \\
+			\mbox{(por conjuntos)} & = & \{v(t)|M \models T'_t(R)[v]\} \backslash \{v(t)|M \models T'_t(S)[v]\} \\
+			\mbox{(por semantica)} & = & \llbracket \{t|T'_t(R)\rrbracket _M \backslash \llbracket \{t|T'_t(S)\}\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket T(R)\rrbracket _M \backslash \llbracket T(S)\rrbracket _M
+		\end{eqnarray*}
+		Por hipotesis de induccion estructural $\llbracket T(R)\rrbracket _M$ y $\llbracket T(S)\rrbracket _M$ son ambas finitas, y por lo tanto su resta lo es tambien.
+%
+	\begin{center}
+	\begin{tabular}{p{12cm}}
+	\hline
+	\textbf{Para $R \times S$} \\
+	\hline
+	\end{tabular}
+	\end{center}
+%	
+		\begin{eqnarray*}
+			&& \llbracket T(R \backslash S)\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|T'_t(R \times S)\}\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|
+				(\exists t_1)(T'_{t_1}(R) \wedge t[1]=t_1[1] \wedge \ldots \wedge t[n]=t_1[n]) \wedge\\
+				&& (\exists t_2)(T'_{t_2}(S) \wedge t[n+1]=t_2[1] \wedge \ldots \wedge t[n+m]=t_2[m])\}\rrbracket _M \\
+			\mbox{(por semantica)} & = & \{v(t)|M \models 
+				((\exists t_1)(T'_{t_1}(R) \wedge t[1]=t_1[1] \wedge \ldots \wedge t[n]=t_1[n]) \wedge\\
+				&& (\exists t_2)(T'_{t_2}(S) \wedge t[n+1]=t_2[1] \wedge \ldots \wedge t[n+m]=t_2[m]))[v]\} \\
+			\mbox{(por semantica)} & = & \{v(t)|\\
+				&& M \models ((\exists t_1)(T'_{t_1}(R) \wedge t[1]=t_1[1] \wedge \ldots \wedge t[n]=t_1[n]))[v] \ y \ \\
+				&& M \models ((\exists t_2)(T'_{t_2}(S) \wedge t[n+1]=t_2[1] \wedge \ldots \wedge t[n+m]=t_2[m]))[v]\} \\
+			\mbox{(por semantica)} & = & \{v(t)| \\
+				&& (\existe a_1)(M \models (T'_{t_1}(R) \wedge t[1]=t_1[1] \wedge \ldots \wedge t[n]=t_1[n])[v[a_1/t_1]] ) \ y \ \\
+				&& (\existe a_2)(M \models (T'_{t_2}(S) \wedge t[n+1]=t_2[1] \wedge \ldots \\
+				&& \wedge \ t[n+m]=t_2[m])[v[a_2/t_2]] )\} 
+			\end{eqnarray*}
+%				
+			\begin{eqnarray*}				
+			\mbox{(por semantica)} & = & \{v(t)| \\
+				&& (\existe a_1)(M \models T'_{t_1}(R)[v[a_1/t_1]]  \ y \\ 
+				&& \quad M \models (t[1]=t_1[1] \wedge \ldots \wedge t[n]=t_1[n])[v[a_1/t_1]] ) \ y \ \\
+				&& (\existe a_2)(M \models T'_{t_2}(S)[v[a_2/t_2]]  \ y \\ 
+				&& \quad M \models (t[n+1]=t_2[1] \wedge \ldots \wedge t[n+m]=t_2[m])[v[a_2/t_2]] )\} \\
+			\mbox{(por semantica)} & = & \{v(t)| \\
+				&& (\existe a_1)(M \models T'_{t_1}(R)[v[a_1/t_1]]  \ y \\ 
+				&& \quad M \models (t[1]=t_1[1] \wedge \ldots \wedge t[n]=t_1[n])[v[a_1/t_1]] ) \ y \ \\
+				&& (\existe a_2)(M \models T'_{t_2}(S)[v[a_2/t_2]]  \ y \\ 
+				&& \quad M \models (t[n+1]=t_2[1] \wedge \ldots \wedge t[n+m]=t_2[m])[v[a_2/t_2]] )\} \\
+			\mbox{(por semantica)} & = & \{v(t)| \\
+				&& (\existe a_1)(M \models T'_{t_1}(R)[v[a_1/t_1]]  \ y \\ 
+				&& \quad v(t)[1]=a_1[1] \ y \ \ldots \ y \ v(t)[n]=a_1[n]) \ y \ \\
+				&& (\existe a_2)(M \models T'_{t_2}(S)[v[a_2/t_2]]  \ y \\ 
+				&& \quad v(t)[n+1]=a_2[1] \ y \ \ldots \ y \ v(t)[n+m]=a_2[m])\}\\
+			\mbox{(por propiedad)} & = & \{v(t)| (\existe a_1,a_2)( \\
+				&& \quad a_1 \in \{v(t_1)|M \models T'_{t_1}(R)[v]\} \ y \ a_2 \in \{v(t_2)|M \models T'_{t_2}(S)[v]\} \ y \\
+				&& \quad v(t) \mbox{ es } a_1 \mbox{ `concatenado' con } b)\}\\
+			\mbox{(por conjuntos)} & = & \{v(t_1)|M \models T'_{t_1}(R)[v]\} \times \{v(t_2)|M \models T'_{t_2}(S)[v]\} \\
+			\mbox{(por semantica)} & = & \llbracket \{t_1|T'_{t_1}(R)\rrbracket _M \times \llbracket \{t_2|T'_{t_2}(S)\}\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket T(R)\rrbracket _M \times \llbracket T(S)\rrbracket _M
+		\end{eqnarray*}
+		Por hipotesis de induccion estructural $\llbracket T(R)\rrbracket _M$ y $\llbracket T(S)\rrbracket _M$ son ambas finitas, y por lo tanto su producto lo es tambien.
+%
+	\begin{center}
+	\begin{tabular}{p{12cm}}
+	\hline
+	\textbf{Para $\pi_{i_1, \ldots ,i_n}(R)$} \\
+	\hline
+	\end{tabular}
+	\end{center}
+%	
+		\begin{eqnarray*}
+			&& \llbracket T(\pi_{i_1, \ldots ,i_n}(R))\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|T'_t(\pi_{i_1, \ldots ,i_n}(R))\}\rrbracket _M \\
+			\mbox{(por traduccion)} & = & 
+				\llbracket \{t|(\exists t_1) (T'_{t_1}(R) \wedge t[1]=t_1[i_1] \wedge\ldots\wedge t[n]=t_1[i_n])\}\rrbracket _M \\
+			\mbox{(por semantica)} & = & 
+				\{v(t)|M \models (\exists t_1) (T'_{t_1}(R) \wedge t[1]=t_1[i_1] \wedge\ldots\wedge t[n]=t_1[i_n])[v]\} \\
+			\mbox{(por semantica)} & = & 
+				\{v(t)|(\existe a) (M \models (T'_{t_1}(R) \wedge t[1]=t_1[i_1] \wedge\ldots\\
+				&&\wedge t[n]=t_1[i_n])[v[a/t_1]] )\} \\
+			\mbox{(por semantica)} & = & 
+				\{v(t)|(\existe a) (M \models T'_{t_1}(R)[v[a/t_1]]  \ y \ v(t)[1]=a[i_1] \ y \ldots \\
+				&& y \  v(t)[n]=a[i_n])\} \\
+			\mbox{(por propiedad)} & = & 
+				\{v(t)|(\existe a) (a \in \{v(t_1)|M \models T'_{t_1}(R)[v]\} \ y \ v(t)[1]=a[i_1] \ y \ldots \\
+				&& y \  v(t)[n]=a[i_n])\} \\
+			\mbox{(por justificacion)} & = & 
+				\{v(t)|(\existe a) (a \in \{v(t_1)|M \models T'_{t_1}(R)[v]\} \ y \ v(t)[1]=a[1] \ y \ldots \\
+				&&y \  v(t)[n]=a[n])\} \\
+			\mbox{(por justificacion)} & = & \{v(t)|M \models T'_{t}(R)[v]\} \\
+			\mbox{(por semantica)} & = & \llbracket \{t|T'_{t}(R)\}\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket T(R)\rrbracket _M
+		\end{eqnarray*}
+		Por hipotesis de induccion estructural $\llbracket T(R)\rrbracket _M$ es finita.\\
+		\\
+		\textbf{Justificacion}\\
+		Podemos ver que el dominio de los atributos de $v(t)$ depende de los de $a$ (por $v(t)[1]=a[1] \ y \ldots y \  v(t)[n]=a[n]$) y que $a$ pertenece a $\{v(t_1)|M \models T'_{t_1}(R)[v]\}$. Pero $v(t)$ solo `toma' algunos atributos de $a$ (al menos uno), por lo cual la cantidad de tuplas va a ser siempre menor a que las que hay en el conjunto al que pertenece $a$. El unico caso en que serian iguales de da todos los atributos de $v(t)$ son iguales a los de $a$ ($v(t)=a$).\\
+		Si demostramos que este es finito, cualquier otro caso tambien lo sera.\\
+%
+	\begin{center}
+	\begin{tabular}{p{12cm}}
+	\hline
+	\textbf{Para $\sigma _{i \theta c}(R)$} \\
+	\hline
+	\end{tabular}
+	\end{center}
+%	
+		\begin{eqnarray*}
+			&& \llbracket T(\sigma _{i \theta c}(R))\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|T'_t(\sigma _{i \theta c}(R))\}\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|T'_t(R) \wedge t[i] \ \widetilde{\theta} \ \widetilde{c} \}\rrbracket _M \\
+			\mbox{(por semantica)} & = & \{v(t)|M \models (T'_t(R) \wedge t[i] \ \widetilde{\theta} \ \widetilde{c})[v]\} \\
+			\mbox{(por semantica)} & = & \{v(t)|M \models T'_t(R)[v] \ y \ v(t)[i] \ \widetilde{\theta} \ \widetilde{c}\} \\
+			\mbox{(por conjuntos)} & = & \{v(t)|M \models T'_t(R)[v] \} \cap \{v(t)|v(t)[i] \ \widetilde{\theta} \ \widetilde{c}\} \\
+			\mbox{(por reescritura)} & = & \{v(t)|M \models T'_t(R)[v] \} \cap \{b|b[i] \ \widetilde{\theta} \ \widetilde{c}\} \\
+			\mbox{(por conjuntos)} & = & \llbracket \{t|T'_t(R)\}\rrbracket _M \cap \{b|b[i] \ \widetilde{\theta} \ \widetilde{c}\} \\
+			\mbox{(por traduccion)} & = & \llbracket T(R)\rrbracket _M \cap \{b|b[i] \ \widetilde{\theta} \ \widetilde{c}\} \\
+		\end{eqnarray*}
+		Por hipotesis de induccion estructural $\llbracket T(R)\rrbracket _M$ es finita, y por lo tanto su interseccion con otro conjunto lo es tambien.
+	
+	Para $ \sigma _{i \theta j}(R) $\\
+	
+		\begin{eqnarray*}
+			&& \llbracket T(\sigma _{i \theta j}(R))\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|T'_t(\sigma _{i \theta j}(R))\}\rrbracket _M \\
+			\mbox{(por traduccion)} & = & \llbracket \{t|T'_t(R) \wedge t[i] \ \widetilde{\theta} \ t[j] \}\rrbracket _M \\
+			\mbox{(por semantica)} & = & \{v(t)|M \models (T'_t(R) \wedge t[i] \ \widetilde{\theta} \ t[j])[v]\} \\
+			\mbox{(por semantica)} & = & \{v(t)|M \models T'_t(R)[v] \ y \ v(t)[i] \ \widetilde{\theta} \ v(t)[j]\} \\
+			\mbox{(por conjuntos)} & = & \{v(t)|M \models T'_t(R)[v] \} \cap \{v(t)|v(t)[i] \ \widetilde{\theta} \ v(t)[j]\} \\
+			\mbox{(por reescritura)} & = & \{v(t)|M \models T'_t(R)[v] \} \cap \{b|b[i] \ \widetilde{\theta} \ b[j]\} \\
+			\mbox{(por conjuntos)} & = & \llbracket \{t|T'_t(R)\}\rrbracket _M \cap \{b|b[i] \ \widetilde{\theta} \ b[j]\} \\
+			\mbox{(por traduccion)} & = & \llbracket T(R)\rrbracket _M \cap \{b|b[i] \ \widetilde{\theta} \ b[j]\} \\
+		\end{eqnarray*}
+		Por hipotesis de induccion estructural $\llbracket T(R)\rrbracket _M$ es finita, y por lo tanto su interseccion con otro conjunto lo es tambien.
+
+	\section{Politica de Locks}
+	\subsection{Enunciado}
+	Considere la siguiente politica de adminitracion de locks:
+	\begin{enumerate}
+		\item Asigne un orden lineal a los items.
+		\item Cada transaccion debe solicitar los locks en ese orden.
+	\end{enumerate}
+	Demuestre que esta politica previene los deadlocks.
+	\subsection{Demostracion}
+	Sean $A_1,\ldots,A_m$ los items, en su orden lineal (es decir, una transaccion no debe solicitar un lock para $A_1$ si ya solicito un lock para $A_j$ con $i<j$.\\
+	Sean $T_1,\ldots,T_n$ un conjunto de transacciones que repeten la politica de locks ($A_1,\ldots,A_m$).\\
+	
+	Vamos a probar por el absurdo que esta politica de lock previene deadlocks.\\
+	
+	Supongamos que ocurrio un deadlock, luego existe un conjunto de transacciones $T'_1,\ldots,T'_k$ con $k \geq 2$ tal que :
+	\begin{displaymath}
+		\left.
+			\begin{array}{l}
+				-\ \{T'_1,\ldots,T'_k\} \subseteq \{T_1,\ldots,T_n\}\\
+				-\ (\forall i \in \{1,\ldots,k\}) (T'_i \mbox{ espera a } T'_j) \mbox{ donde }
+				j = 
+				\left\{
+					\begin{array}{cl}
+						1 & \textrm{si } i = k \\
+						i+1 & \textrm{sino }\\
+					\end{array}
+				\right.
+			\end{array}
+		\right.
+	\end{displaymath}
+	Graficamente:
+	\begin{eqnarray*}
+		T'_1 \longrightarrow T'_2 \longrightarrow \ldots \longrightarrow T'_k \longrightarrow T'_1
+	\end{eqnarray*}
+	$T'_i \longrightarrow T'_j$ significa que la transaccion $T'_i$ espera a $T'_j$ porque $T'_j$ tiene un lock sobre un item que $T'_i$ solicito el lock.\\
+	Ademas, $T'_j$ tiene un lock sobre el item de indice $Q_j$, y $T'_i$ solicito un lock sobre dicho item. Es decir, $T'_i$ espera a $T'_j$ por el lock del item $A_{Q_j}$.\\
+	Graficamente:
+	\begin{displaymath}
+		\left.
+			\begin{array}{ccccccccc}
+				T'_1 & \longrightarrow & T'_2 & \longrightarrow & \ldots & \longrightarrow & T'_k & \longrightarrow & T'_1 \\
+				     & A_{Q_2}         &      & A_{Q_3}         &        & A_{Q_k}         &      & A_{Q_1}         &
+			\end{array}
+		\right.	
+	\end{displaymath}
+	
+	
+\end{document}
